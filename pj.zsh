@@ -336,11 +336,10 @@ _pj_fzf_complete() {
   )
 
   if [[ -n "$selected" ]]; then
-    BUFFER="pj ${(q)selected}"
-    zle accept-line
-  else
-    zle reset-prompt
+    cd "$selected" 2>/dev/null && _pj_update "$selected"
+    BUFFER=""
   fi
+  zle reset-prompt
 }
 
 zle -N _pj_fzf_complete
