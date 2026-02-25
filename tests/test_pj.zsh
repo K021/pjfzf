@@ -207,8 +207,10 @@ assert_eq "lower frecency second" "${TEST_PROJECTS_DIR}/alpha" "$second_line"
 
 local third_line=$(echo "$sorted" | sed -n '3p')
 local fourth_line=$(echo "$sorted" | sed -n '4p')
-assert_eq "unscored sorted alpha: beta" "${TEST_PROJECTS_DIR}/beta" "$third_line"
-assert_eq "unscored sorted alpha: delta-sync" "${TEST_PROJECTS_DIR}/delta-sync" "$fourth_line"
+local fifth_line=$(echo "$sorted" | sed -n '5p')
+assert_eq "unscored: base dir first" "${TEST_PROJECTS_DIR}" "$third_line"
+assert_eq "unscored sorted alpha: beta" "${TEST_PROJECTS_DIR}/beta" "$fourth_line"
+assert_eq "unscored sorted alpha: delta-sync" "${TEST_PROJECTS_DIR}/delta-sync" "$fifth_line"
 
 echo ""
 echo "=== Test: _pj_add_base ==="

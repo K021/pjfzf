@@ -25,7 +25,7 @@ _pj_init() {
   fi
 }
 
-# Collect 1-depth directories from all base dirs
+# Collect base dirs + their 1-depth subdirectories
 _pj_list() {
   _pj_init
   local line expanded
@@ -35,6 +35,7 @@ _pj_list() {
     # expand tilde
     expanded="${line/#\~/$HOME}"
     if [[ -d "$expanded" ]]; then
+      echo "$expanded"
       for d in "$expanded"/*(N/); do
         echo "$d"
       done
