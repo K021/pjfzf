@@ -268,6 +268,13 @@ pj() {
 
   local query="${*:-}"
 
+  # Direct absolute path: cd without fzf (used by Tab widget)
+  if [[ "$query" == /* && -d "$query" ]]; then
+    cd "$query" || return 1
+    _pj_update "$query"
+    return 0
+  fi
+
   local selected
   selected=$(_pj_sorted | fzf \
     --query="$query" \
@@ -286,27 +293,58 @@ pj() {
   fi
 }
 
-# --- Tab completion -----------------------------------------------------------
+# --- Tab completion (zle widget + fzf) ----------------------------------------
 
+# Subcommand completion only (for pj add/remove <Tab>)
 _pj() {
-  local -a subcmds
-  subcmds=(add remove list help)
-
-  if (( CURRENT == 2 )); then
-    # First argument: subcommands + project names via fzf
-    _describe 'subcommand' subcmds
-    return
-  fi
-
   case "${words[2]}" in
     add|remove)
-      _directories
-      ;;
-    list|help)
-      # No further arguments
+      (( CURRENT >= 3 )) && _directories
       ;;
   esac
 }
+
+# Tab handler: intercept "pj " to launch fzf, otherwise default completion
+_pj_fzf_complete() {
+  # Only intercept when buffer starts with "pj " (with space)
+  if [[ "${LBUFFER}" != "pj "* ]]; then
+    zle expand-or-complete
+    return
+  fi
+
+  local tokens=(${(z)LBUFFER})
+
+  # Subcommands: fall back to default completion
+  if (( ${#tokens} >= 2 )) && [[ "${tokens[2]}" == (add|remove|list|help)* ]]; then
+    zle expand-or-complete
+    return
+  fi
+
+  local query=""
+  (( ${#tokens} >= 2 )) && query="${tokens[2]}"
+
+  local selected
+  selected=$(_pj_sorted | fzf \
+    --height=40% \
+    --reverse \
+    --prompt='pj> ' \
+    --select-1 \
+    --exit-0 \
+    --preview 'ls -la {}' \
+    --preview-window=right:40% \
+    --query="$query" \
+  )
+
+  if [[ -n "$selected" ]]; then
+    BUFFER="pj ${(q)selected}"
+    zle accept-line
+  else
+    zle reset-prompt
+  fi
+}
+
+zle -N _pj_fzf_complete
+bindkey '^I' _pj_fzf_complete
 
 if (( $+functions[compdef] )); then
   compdef _pj pj
