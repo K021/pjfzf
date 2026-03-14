@@ -2,6 +2,8 @@
 
 fzf 기반 프로젝트 디렉토리 네비게이터. frecency(빈도+최근성) 정렬로 자주 사용하는 프로젝트에 빠르게 이동합니다.
 
+![pjfzf screenshot](assets/screenshot.png)
+
 ## 설치
 
 ### Homebrew
