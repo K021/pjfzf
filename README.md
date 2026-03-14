@@ -20,8 +20,8 @@ source $(brew --prefix)/share/pjfzf/pj.zsh
 ### 수동 설치
 
 ```zsh
-git clone https://github.com/K021/pjfzf.git ~/.pjfzf
-echo 'source ~/.pjfzf/pj.zsh' >> ~/.zshrc
+curl -o ~/.pj.zsh https://raw.githubusercontent.com/K021/pjfzf/main/pj.zsh
+echo 'source ~/.pj.zsh' >> ~/.zshrc
 source ~/.zshrc
 ```
 
