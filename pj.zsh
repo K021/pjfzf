@@ -294,6 +294,67 @@ pj() {
   fi
 }
 
+# --- pjmk: create project directory -------------------------------------------
+
+# List only base directories
+_pj_base_dirs() {
+  _pj_init
+  local line expanded
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    [[ -z "$line" || "$line" == \#* ]] && continue
+    expanded="${line/#\~/$HOME}"
+    [[ -d "$expanded" ]] && echo "$expanded"
+  done < "$_PJ_CONFIG_FILE"
+}
+
+pjmk() {
+  if ! command -v fzf &>/dev/null; then
+    echo "pjmk: fzf is required. Install with: brew install fzf" >&2
+    return 1
+  fi
+
+  _pj_init
+
+  local name="${1:-}"
+
+  # 1. Select base directory
+  local base
+  base=$(_pj_base_dirs | fzf \
+    --height=40% \
+    --reverse \
+    --prompt='base> ' \
+    --select-1 \
+    --exit-0 \
+  )
+
+  if [[ -z "$base" ]]; then
+    return 0
+  fi
+
+  # 2. Read project name if not given as argument
+  if [[ -z "$name" ]]; then
+    echo -n "Project name: "
+    read -r name
+  fi
+
+  if [[ -z "$name" ]]; then
+    echo "pjmk: name required" >&2
+    return 1
+  fi
+
+  local target="${base}/${name}"
+
+  if [[ -d "$target" ]]; then
+    echo "pjmk: already exists: $target" >&2
+    return 1
+  fi
+
+  mkdir -p "$target"
+  cd "$target" || return 1
+  _pj_update "$target"
+  echo "pjmk: created $target"
+}
+
 # --- Tab completion (zle widget + fzf) ----------------------------------------
 
 # Subcommand completion only (for pj add/remove <Tab>)
