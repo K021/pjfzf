@@ -23,6 +23,7 @@ Unlike general-purpose directory jumpers (z, zoxide, autojump), pjfzf is designe
 
 ```zsh
 brew tap K021/pjfzf
+brew trust k021/pjfzf   # Homebrew 6+ requires trusting third-party taps
 brew install pjfzf
 ```
 

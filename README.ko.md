@@ -10,6 +10,7 @@ fzf 기반 프로젝트 디렉토리 네비게이터. frecency(빈도+최근성)
 
 ```zsh
 brew tap K021/pjfzf
+brew trust k021/pjfzf   # Homebrew 6+ 부터 서드파티 tap은 신뢰 필요
 brew install pjfzf
 ```
 
